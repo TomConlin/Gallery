@@ -25,7 +25,7 @@ exif="jhead"
 stylesheet="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css"
 
 downloadicon='<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'
-movieicon='<span class="glyphicon glyphicon-film" aria-hidden="true"></span>'
+#movieicon='<span class="glyphicon glyphicon-film" aria-hidden="true"></span>'
 homeicon='<span class="glyphicon glyphicon-home" aria-hidden="true"></span>'
 
 # Debugging output
@@ -128,7 +128,7 @@ if [[ $(find . -maxdepth 1 -type f -iname \*.jpg | wc -l) -gt 0 ]]; then
 echo '<div class="row">' >> "$htmlfile"
 ## Generate Images
 numfiles=0
-for filename in *.[jJ][pP][gG]; do
+for filename in *.[jJ][pP][eE]*[gG]; do
 	filelist[$numfiles]=$filename
 	(( numfiles++ ))
 	for res in ${heights[*]}; do
@@ -224,34 +224,34 @@ done
 fi
 
 ### Movies (MOV or MP4)
-if [[ $(find . -maxdepth 1 -type f -iname \*.mov  -o -iname '*.mp4' | wc -l) -gt 0 ]]; then
-	cat >> "$htmlfile" << EOF
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="page-header"><h2>Movies</h2></div>
-		</div>
-	</div>
-	<div class="row">
-	<div class="col-xs-12">
-EOF
-	if [[ $(find . -maxdepth 1 -type f -iname \*.mov | wc -l) -gt 0 ]]; then
-	for filename in *.[mM][oO][vV]; do
-		filesize=$(getFileSize "$filename")
-		cat >> "$htmlfile" << EOF
-<a href="$filename" class="btn btn-primary" role="button">$movieicon $filename ($filesize)</a>
-EOF
-	done
-	fi
-	if [[ $(find . -maxdepth 1 -type f -iname \*.mp4 | wc -l) -gt 0 ]]; then
-	for filename in *.[mM][pP]4; do
-		filesize=$(getFileSize "$filename")
-		cat >> "$htmlfile" << EOF
-<a href="$filename" class="btn btn-primary" role="button">$movieicon $filename ($filesize)</a>
-EOF
-	done
-	fi
-	echo '</div></div>' >> "$htmlfile"
-fi
+#if [[ $(find . -maxdepth 1 -type f -iname \*.mov  -o -iname '*.mp4' | wc -l) -gt 0 ]]; then
+#	cat >> "$htmlfile" << EOF
+#	<div class="row">
+#		<div class="col-xs-12">
+#			<div class="page-header"><h2>Movies</h2></div>
+#		</div>
+#	</div>
+#	<div class="row">
+#	<div class="col-xs-12">
+#EOF
+#	if [[ $(find . -maxdepth 1 -type f -iname \*.mov | wc -l) -gt 0 ]]; then
+#	for filename in *.[mM][oO][vV]; do
+#		filesize=$(getFileSize "$filename")
+#		cat >> "$htmlfile" << EOF
+#<a href="$filename" class="btn btn-primary" role="button">$movieicon $filename ($filesize)</a>
+#EOF
+#	done
+#	fi
+#	if [[ $(find . -maxdepth 1 -type f -iname \*.mp4 | wc -l) -gt 0 ]]; then
+#	for filename in *.[mM][pP]4; do
+#		filesize=$(getFileSize "$filename")
+#		cat >> "$htmlfile" << EOF
+#<a href="$filename" class="btn btn-primary" role="button">$movieicon $filename ($filesize)</a>
+#EOF
+#	done
+#	fi
+#	echo '</div></div>' >> "$htmlfile"
+#fi
 
 ### Downloads (ZIP)
 if [[ $(find . -maxdepth 1 -type f -iname \*.zip | wc -l) -gt 0 ]]; then
@@ -286,3 +286,4 @@ cat >> "$htmlfile" << EOF
 EOF
 
 debugOutput "= done :-)"
+
