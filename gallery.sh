@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # gallery.sh
-# Author: Nils Knieling - https://github.com/Cyclenerd/gallery_shell
+#
+# Forked from: Nils Knieling - https://github.com/Cyclenerd/gallery_shell
 # Inspired by: Shapor Naghibzadeh - https://github.com/shapor/bashgal
 
 #########################################################################################
@@ -14,29 +15,34 @@ quality=85
 thumbdir="__thumbs"
 htmlfile="index.html"
 title="Gallery"
-footer='Created with <a href="https://github.com/Cyclenerd/gallery_shell">gallery.sh</a>'
+footer='Created with gallery.sh</a>'
 
 # Use convert from ImageMagick
-convert="convert" 
+convert="convert"
 # Use JHead for EXIF Information
 exif="jhead"
 
-# Bootstrap (currently v3.4.1)
-stylesheet="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css"
+# Bootstrap (currently v3.4.1)  but trying 4.5.0
+# use local cache for css
+# check https://getbootstrap.com/docs/4.5/getting-started/download/
+# for latest
+
+stylesheet="css/bootstrap.min.css"
 
 downloadicon='<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'
 #movieicon='<span class="glyphicon glyphicon-film" aria-hidden="true"></span>'
 homeicon='<span class="glyphicon glyphicon-home" aria-hidden="true"></span>'
 
 # Debugging output
-# true=enable, false=disable 
+# true=enable, false=disable
 debug=true
 
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 #########################################################################################
 #### End Configuration Section
 #########################################################################################
 
-
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 me=$(basename "$0")
 datetime=$(date -u "+%Y-%m-%d %H:%M:%S")
 datetime+=" UTC"
@@ -94,6 +100,9 @@ command -v $exif >/dev/null 2>&1 || { echo >&2 "!!! $exif it's not installed.  A
 
 ### Create Folders
 [[ -d "$thumbdir" ]] || mkdir "$thumbdir" || exit 2
+[[ -d css ]] || mkdir css || exit 2
+
+cp -fr "$REPO/css/*" ./css/
 
 heights[0]=$height_small
 heights[1]=$height_large
@@ -168,7 +177,6 @@ while [[ $file -lt $numfiles ]]; do
 <meta charset="utf-8">
 <title>$filename</title>
 <meta name="viewport" content="width=device-width">
-<meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="$stylesheet">
 </head>
 <body>
