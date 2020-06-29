@@ -18,20 +18,17 @@ title="Gallery"
 footer='Created with gallery.sh</a>'
 
 # Use convert from ImageMagick
-convert="convert"
+convert="/usr/bin/convert"
 # Use JHead for EXIF Information
-exif="jhead"
+exif="/usr/bin/exif"
+# exif="/usr/bin/jhead"
 
-# Bootstrap (currently v3.4.1)  but trying 4.5.0
+# Bootstrap (currently 4.5.0)
 # use local cache for css
 # check https://getbootstrap.com/docs/4.5/getting-started/download/
 # for latest
 
 stylesheet="css/bootstrap.min.css"
-
-downloadicon='<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>'
-#movieicon='<span class="glyphicon glyphicon-film" aria-hidden="true"></span>'
-homeicon='<span class="glyphicon glyphicon-home" aria-hidden="true"></span>'
 
 # Debugging output
 # true=enable, false=disable
@@ -44,7 +41,7 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 me=$(basename "$0")
-datetime=$(date -u "+%Y-%m-%d %H:%M:%S")
+datetime=$(date -u "+%Y-%b-%d %H:%M:%S")
 datetime+=" UTC"
 
 function usage {
@@ -54,6 +51,10 @@ function usage {
 	[-d <thumbdir>]\\t sets the thumbdir (default: $thumbdir)
 	[-h]\\t\\t displays help (this message)"
 	exit "$returnCode"
+}
+
+function reformat_date(){
+	date -d $(exif -m -t DateTime "$1"|cut -c1-10|tr ':' '-') "+%Y %b %d"
 }
 
 function debugOutput(){
@@ -100,9 +101,9 @@ command -v $exif >/dev/null 2>&1 || { echo >&2 "!!! $exif it's not installed.  A
 
 ### Create Folders
 [[ -d "$thumbdir" ]] || mkdir "$thumbdir" || exit 2
-[[ -d css ]] || mkdir css || exit 2
+# keep resources local
 
-cp -fr "$REPO/css/*" ./css/
+[[ -d css ]] || mkdir css && cp -fr "$REPO"/css/* css/|| exit 2
 
 heights[0]=$height_small
 heights[1]=$height_large
@@ -132,13 +133,20 @@ cat > "$htmlfile" << EOF
 EOF
 
 ### Photos (JPG)
-if [[ $(find . -maxdepth 1 -type f -iname \*.jpg | wc -l) -gt 0 ]]; then
 
+if [[ $(find . -maxdepth 1 -type f -iname "*.[jJ][pP]*[gG]" | wc -l) -gt 0 ]]; then
 echo '<div class="row">' >> "$htmlfile"
 ## Generate Images
 numfiles=0
-for filename in *.[jJ][pP][eE]*[gG]; do
+
+# order chronologicaly (by date camera thought it was)
+SNAPS=$(for img in *.[jJ][pP]*[gG] ; do
+	echo -e "$img" "\t" $(exif -m -t DateTimeOriginal "$img")
+done | sort -k2d | tr -s ' ' |cut -f1 -d ' ' | tr '\n' ' ')
+
+for filename in $SNAPS ; do
 	filelist[$numfiles]=$filename
+
 	(( numfiles++ ))
 	for res in ${heights[*]}; do
 		if [[ ! -s $thumbdir/$res/$filename ]]; then
@@ -154,6 +162,7 @@ for filename in *.[jJ][pP][eE]*[gG]; do
 	</p>
 </div>
 EOF
+
 [[ $((numfiles % 4)) -eq 0 ]] && echo '<div class="clearfix visible-md visible-lg"></div>' >> "$htmlfile"
 done
 echo '</div>' >> "$htmlfile"
@@ -167,7 +176,7 @@ while [[ $file -lt $numfiles ]]; do
 	[[ $file -ne 0 ]] && prev=${filelist[$((file - 1))]}
 	[[ $file -ne $((numfiles - 1)) ]] && next=${filelist[$((file + 1))]}
 	imagehtmlfile="$thumbdir/$filename.html"
-	exifinfo=$($exif "$filename")
+	snapdate=$(reformat_date "$filename")
 	filesize=$(getFileSize "$filename")
 	debugOutput "$imagehtmlfile"
 	cat > "$imagehtmlfile" << EOF
@@ -175,50 +184,54 @@ while [[ $file -lt $numfiles ]]; do
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>$filename</title>
+<title>$filename $snapdate</title>
 <meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="$stylesheet">
+<link rel="stylesheet" href="../$stylesheet">
 </head>
 <body>
 <div class="container">
 <div class="row">
 	<div class="col-xs-12">
-		<div class="page-header"><h2><a href="../$htmlfile">$homeicon</a> <span class="text-muted">/</span> $filename</h2></div>
+		<div class="page-header"><h2>
+			<span class="text-muted">$filename&nbsp;&nbsp;&nbsp;&nbsp;$snapdate </span>
+		</h2></div>
 	</div>
 </div>
 EOF
 
 	# Pager
-	echo '<div class="row"><div class="col-xs-12"><nav><ul class="pager">' >> "$imagehtmlfile"
-	[[ $prev ]] && echo '<li class="previous"><a href="'"$prev"'.html"><span aria-hidden="true">&larr;</span></a></li>' >> "$imagehtmlfile"
-	[[ $next ]] && echo '<li class="next"><a href="'"$next"'.html"><span aria-hidden="true">&rarr;</span></a></li>' >> "$imagehtmlfile"
-	echo '</ul></nav></div></div>' >> "$imagehtmlfile"
+	{	echo '<div class="row">' ;
+		[[ $prev ]] && echo '<div class="col-sm-4"><a href="'"$prev"'.html">&lt;-Previous</a></div>' ;
+		echo "<div class=\"col-sm-4\"><a href=\"../$htmlfile\">Gallery</a></div>" ;
+		[[ $next ]] && echo '<div class="col-sm-4"><a href="'"$next"'.html">Next -&gt;</a></div>' ;
+		echo '</div>' ;
+	} >> "$imagehtmlfile"
+
+	if [[ -e ${filename%.*}.txt ]]; then
+		blurb=$(cat "${filename%.*}".txt)
+		echo -e "BLURB for $filename is \n$blurb"
+    else
+		blurb=""
+	fi
 
 	cat >> "$imagehtmlfile" << EOF
 <div class="row">
-	<div class="col-xs-12">
-		<p><img src="$height_large/$filename" class="img-responsive" alt=""></p>
+	<div class="col-xs-6">
+		<p><a href="../$filename"><img src="$height_large/$filename" class="img-responsive" alt=""></a></p>
 	</div>
-</div>
-<div class="row">
-	<div class="col-xs-12">
-		<p><a class="btn btn-info btn-lg" href="../$filename">$downloadicon Download Original ($filesize)</a></p>
-	</div>
-</div>
-EOF
+	<div class="col-xs-6">
+		<pre>
+	Name:  $filename
+	Date:  $snapdate
+	Size:  $filesize
+	----------------
 
-	# EXIF
-	if [[ $exifinfo ]]; then
-		cat >> "$imagehtmlfile" << EOF
-<div class="row">
-<div class="col-xs-12">
-<pre>
-$exifinfo
-</pre>
-</div>
+$blurb
+
+		</pre>
+	</div>
 </div>
 EOF
-	fi
 
 	# Footer
 	cat >> "$imagehtmlfile" << EOF
@@ -229,56 +242,6 @@ EOF
 	(( file++ ))
 done
 
-fi
-
-### Movies (MOV or MP4)
-#if [[ $(find . -maxdepth 1 -type f -iname \*.mov  -o -iname '*.mp4' | wc -l) -gt 0 ]]; then
-#	cat >> "$htmlfile" << EOF
-#	<div class="row">
-#		<div class="col-xs-12">
-#			<div class="page-header"><h2>Movies</h2></div>
-#		</div>
-#	</div>
-#	<div class="row">
-#	<div class="col-xs-12">
-#EOF
-#	if [[ $(find . -maxdepth 1 -type f -iname \*.mov | wc -l) -gt 0 ]]; then
-#	for filename in *.[mM][oO][vV]; do
-#		filesize=$(getFileSize "$filename")
-#		cat >> "$htmlfile" << EOF
-#<a href="$filename" class="btn btn-primary" role="button">$movieicon $filename ($filesize)</a>
-#EOF
-#	done
-#	fi
-#	if [[ $(find . -maxdepth 1 -type f -iname \*.mp4 | wc -l) -gt 0 ]]; then
-#	for filename in *.[mM][pP]4; do
-#		filesize=$(getFileSize "$filename")
-#		cat >> "$htmlfile" << EOF
-#<a href="$filename" class="btn btn-primary" role="button">$movieicon $filename ($filesize)</a>
-#EOF
-#	done
-#	fi
-#	echo '</div></div>' >> "$htmlfile"
-#fi
-
-### Downloads (ZIP)
-if [[ $(find . -maxdepth 1 -type f -iname \*.zip | wc -l) -gt 0 ]]; then
-	cat >> "$htmlfile" << EOF
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="page-header"><h2>Downloads</h2></div>
-		</div>
-	</div>
-	<div class="row">
-	<div class="col-xs-12">
-EOF
-	for filename in *.[zZ][iI][pP]; do
-		filesize=$(getFileSize "$filename")
-		cat >> "$htmlfile" << EOF
-<a href="$filename" class="btn btn-primary" role="button">$downloadicon $filename ($filesize)</a>
-EOF
-	done
-	echo '</div></div>' >> "$htmlfile"
 fi
 
 ### Footer
