@@ -54,7 +54,25 @@ Example: `gallery.sh` or `gallery.sh -t "My Photos" -d "thumbs"`
 The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files. It does not work recursively.
 
 
-Demo (of the original version)
+Differences
+----------
+
+This version differs from the original in a number of ways.
+
+  - Does not discourage spiders/robots or indexing (I put stuff up to be found)
+  - Does not output camera metadata other than when the picture was taken.
+  - Does not support movies and downloads (just pictures)
+  - Clicking on gallery images get you to the full original image.
+  	- Save that as you will for downloading
+  - Display order is strictly chronological.
+  - Include a text file with same base-name as the image for a description blurb. 
+ 
+  - Things I wish I had remained blissfully unaware of such as 
+  	- javascript framework versions numbers
+  	- supported glyficon fonts v.s. svg icons  
+
+
+Demo (of the original version nor this one)
 ----
 
 https://www.nkn-it.de/gallery_shell_demo/
