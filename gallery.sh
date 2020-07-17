@@ -14,8 +14,9 @@ height_large=768
 quality=85
 thumbdir="__thumbs"
 htmlfile="index.html"
-title="Gallery"
-footer='Created with gallery.sh</a>'
+parentpage="../index.html"  # navigation Up from the top level page created
+title="${PWD##*/}"          # name of the current directory as default
+footer='Created with gallery.sh'
 
 # Use convert from ImageMagick
 convert="/usr/bin/convert"
@@ -34,6 +35,7 @@ stylesheet="css/bootstrap.min.css"
 # true=enable, false=disable
 debug=true
 
+# The cloned git reposity this script is in to copy the css dir from
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 #########################################################################################
 #### End Configuration Section
@@ -103,7 +105,7 @@ command -v $exif >/dev/null 2>&1 || { echo >&2 "!!! $exif it's not installed.  A
 [[ -d "$thumbdir" ]] || mkdir "$thumbdir" || exit 2
 # keep resources local
 
-[[ -d css ]] || mkdir css && cp -fr "$REPO"/css/* css/|| exit 2
+[[ -d css ]] || mkdir css && rsync -r "$REPO"/css/* css|| exit 2
 
 heights[0]=$height_small
 heights[1]=$height_large
@@ -120,13 +122,14 @@ cat > "$htmlfile" << EOF
 	<meta charset="utf-8">
 	<title>$title</title>
 	<meta name="viewport" content="width=device-width">
-	<meta name="robots" content="noindex, nofollow">
 	<link rel="stylesheet" href="$stylesheet">
+	<base href="./">
 </head>
 <body>
 <div class="container">
 	<div class="row">
-		<div class="col-xs-12">
+		<div class="col-xs-2"><a href="$parentpage">Up..&nbsp;</a></div>
+		<div class="col-xs-10">
 			<div class="page-header"><h1>$title</h1></div>
 		</div>
 	</div>
@@ -140,6 +143,38 @@ echo '<div class="row">' >> "$htmlfile"
 numfiles=0
 
 # order chronologicaly (by date camera thought it was)
+# ... might want to split this out into its own fx
+# 0x001d GPS Date  
+# 0x0132 Date and Time  
+# 0x9003 Date and Time (Original) 
+# 0x9004 Date and Time (Digitized) 
+# ----------------------------------
+# composite-term    derived from
+# --------------    ------------
+
+#DateCreated 	 	Kodak:YearCreated
+#					Kodak:MonthDayCreated
+
+#DateTimeCreated 	IPTC:DateCreated
+#					IPTC:TimeCreated 	 
+
+#DateTimeOriginal 	DateTimeCreated
+#					DateCreated
+#					TimeCreated
+
+#DateTimeOriginal 	ID3:RecordingTime
+# 					ID3:Year
+#					ID3:Date
+#					ID3:Time 	 
+ 
+# DigitalCreationDateTime 	IPTC:DigitalCreationDate
+#							IPTC:DigitalCreationTime
+# ----------------------------------
+# GPSDateTime 	GPS:GPSDateStamp
+#   			GPS:GPSTimeStamp 	 
+# GPSDateTime	Parrot:GPSLatitude
+# 				SampleTime
+
 SNAPS=$(for img in *.[jJ][pP]*[gG] ; do
 	echo -e "$img" "\t" $(exif -m -t DateTimeOriginal "$img")
 done | sort -k2d | tr -s ' ' |cut -f1 -d ' ' | tr '\n' ' ')
@@ -201,14 +236,19 @@ EOF
 
 	# Pager
 	{	echo '<div class="row">' ;
-		[[ $prev ]] && echo '<div class="col-sm-4"><a href="'"$prev"'.html">&lt;-Previous</a></div>' ;
-		echo "<div class=\"col-sm-4\"><a href=\"../$htmlfile\">Gallery</a></div>" ;
-		[[ $next ]] && echo '<div class="col-sm-4"><a href="'"$next"'.html">Next -&gt;</a></div>' ;
+		if [[ $prev ]]; then 
+			echo '<div class="col-sm-4"><a href="'"$prev"'.html">&#x21D0; Previous</a></div>' ;
+		else
+			echo '<div class="col-sm-4"><a href=""></a></div>' ;
+		fi
+		echo "<div class=\"col-sm-4\"><a href=\"../$htmlfile\">&#x21D1;$title&#x21D1;</a></div>" ;
+		[[ $next ]] && echo '<div class="col-sm-4"><a href="'"$next"'.html">Next &#x21D2;</a></div>' ;
 		echo '</div>' ;
 	} >> "$imagehtmlfile"
 
 	if [[ -e ${filename%.*}.txt ]]; then
-		blurb=$(cat "${filename%.*}".txt)
+		# not perfect; only passed simple words & standard punctionation
+		blurb="$( tr -s '/' '_'  < ${filename%.*}.txt | tr -cd '[:alnum:][:space:][:punct:]' )"
 		echo -e "BLURB for $filename is \n$blurb"
     else
 		blurb=""
