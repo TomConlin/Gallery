@@ -49,9 +49,11 @@ Usage
 
 Example: `gallery.sh` or `gallery.sh -t "My Photos" -d "thumbs"`
 
-`gallery.sh` works in the **current** directory.  Just load the index.html in a browser see the output.
+`gallery.sh` works in the **current** directory.  
+Just load the index.html in a browser see the output.
 
-The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files. It does not work recursively.
+The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files. 
+It does not work recursively.
 
 
 Differences
@@ -65,14 +67,14 @@ This version differs from the original in a number of ways.
   - Clicking on gallery images get you to the full original image.
   	- Save that as you will for downloading
   - Display order is strictly chronological.
-  - Include a text file with same base-name as the image for a description blurb. 
+  - Include a `.txt` file with same base-name as the image for a description blurb. 
  
   - Things I wish I had remained blissfully unaware of such as 
   	- javascript framework versions numbers
   	- supported glyficon fonts v.s. svg icons  
 
 
-Demo (of the original version nor this one)
+Demo (of the original version not this fork)
 ----
 
 https://www.nkn-it.de/gallery_shell_demo/
