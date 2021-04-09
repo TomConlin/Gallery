@@ -2,20 +2,28 @@
 # -*- coding: utf-8 -*-
 # fcaption: simple image caption editor
 # Copyright(c) 2015-2016 by wave++ "Yuri D'Elia" <wavexx@thregr.org>
+#
+# Forked 2021. because original fgallery GH repo is "Archived"
+#  - addapt to PyQt5
+#  - avoid recursing directories
+#  - avoid relying on file extensions to identify images
+#  - presentation order to follow exif timestamps
+
 from __future__ import unicode_literals, generators, print_function
 
 import os, sys
 import argparse
 import locale
+import magic
+from exif import Image
 
-# from PyQt4 import QtCore, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 APP_DESC = "fgallery image caption editor"
 ENCODING = locale.getpreferredencoding()
-FILE_EXT = ["jpg", "jpeg", "png", "tif", "tiff"]
+# FILE_EXT = ["jpg", "jpeg", "png", "tif", "tiff"]
 
 if sys.version_info.major < 3:
     str = unicode
@@ -218,18 +226,38 @@ class MainWindow(QMainWindow):
         if self.modified: self.save()
         super(MainWindow, self).closeEvent(ev)
 
+# put files in exif datetime order
+def exif_sort(files):
+    datetime = {}
+    for tmp in files:
+        with open(tmp, 'rb') as image_file:
+            exif = Image(image_file)
+
+            # datetime[
+                # min(
+                    # exif.get('datetime_original'),
+                    # exif.get('datetime')
+                    #, exif.get('datetime_digitized')
+                    #, os.stat(image_file)
+
+                # ) + '_' + tmp] = tmp   # guard for same exact time
+
+            datetime[
+                exif.datetime_original + "." +
+                exif.subsec_time_original + '_' + tmp] = tmp
+
+    return [datetime[k] for k in  sorted(datetime.keys())]
+
 
 # main application
 def expand_dir(path):
-    for root, dirs, files in os.walk(path):
-        files.sort()
-        for tmp in files:
-            if tmp[0] == '.': continue
-            tmp = os.path.join(root, tmp)
-            ext = os.path.splitext(tmp)[1]
-            if ext: ext = ext[1:].lower()
-            if ext in FILE_EXT:
-                yield tmp
+
+    # for root, dirs, files in os.walk(path):
+    for tmp in os.scandir(path):
+        # filter for image files despite extention
+        if tmp.is_file() and magic.from_file(tmp.path, mime=True)[:5] == 'image':
+            #print(tmp.name)
+            yield tmp.path
 
 
 class Application(QApplication):
@@ -238,8 +266,9 @@ class Application(QApplication):
 
         # command-line flags
         ap = argparse.ArgumentParser(description=APP_DESC)
-        ap.add_argument('files', metavar="image", nargs='*',
-                        help='image or directory to caption')
+        ap.add_argument(
+            'files', metavar="image", nargs='*',
+             help='image or directory to caption')
         args = ap.parse_args(map(str, args[1:]))
 
         # ask for a directory if no files were specified
@@ -256,6 +285,10 @@ class Application(QApplication):
                 files.append(path)
             else:
                 files.extend(expand_dir(path))
+
+        # files.sort()  # lexical sort by filename
+        files = exif_sort(files)  # chronologicaly by creation date
+
         if not files:
             print("no files to caption", file=sys.stderr)
             sys.exit(1)
