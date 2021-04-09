@@ -3,3 +3,5 @@ assert.sh
 *.html
 *.gif
 *.jpg
+*.pyc
+Pipfile.lock
