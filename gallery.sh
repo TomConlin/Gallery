@@ -9,8 +9,23 @@
 #### Configuration Section
 #########################################################################################
 
-height_small=187
-height_large=768
+# ranked acreen sizes in 2019
+# (1280 * 720  * .289)+ 
+# (1920 * 1080 * .214)+ 
+# (800  * 480  * .103)+ 
+# (854  * 480  * .097)+ 
+# (960  * 540  * .089)+ 
+# (1024 * 600  * .078)+ 
+# (1280 * 800  * .050)+ 
+# (2560 * 1440 * .024)+ 
+# (480  * 320  * .012)+ 
+# (1920 * 1200 * .008)+ 
+# (1024 * 768  * .008)  = 1049708.096  [square root -> 1024.55] (hmmm)
+
+height_small=200
+height_large=720  # original would have been ~887 if done this way
+
+
 quality=85
 thumbdir="__thumbs"
 htmlfile="index.html"
@@ -121,7 +136,8 @@ cat > "$htmlfile" << EOF
 <head>
 	<meta charset="utf-8">
 	<title>$title</title>
-	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 	<link rel="stylesheet" href="$stylesheet">
 	<base href="./">
 </head>
@@ -184,9 +200,10 @@ for filename in $SNAPS ; do
 
 	(( numfiles++ ))
 	for res in ${heights[*]}; do
+		pixel_count=$((res * res))
 		if [[ ! -s $thumbdir/$res/$filename ]]; then
 			debugOutput "$thumbdir/$res/$filename"
-			$convert -auto-orient -strip -quality $quality -resize x$res "$filename" "$thumbdir/$res/$filename"
+			$convert -auto-orient -strip -quality $quality -resize "$pixel_count"@ "$filename" "$thumbdir/$res/$filename"
 		fi
 	done
 	cat >> "$htmlfile" << EOF
@@ -214,6 +231,29 @@ while [[ $file -lt $numfiles ]]; do
 	snapdate=$(reformat_date "$filename")
 	filesize=$(getFileSize "$filename")
 	debugOutput "$imagehtmlfile"
+
+	# navigation
+	pager='<div class="row">'
+	if [[ $prev ]]; then 
+		pager=$pager'<div class="col-sm-2"><a href="'"$prev"'.html">&#x21D0; Previous</a></div>' ;
+	else
+		pager=$pager'<div class="col-sm-4"><a href=""></a></div>' ;
+	fi
+	pager=$pager"<div class=\"col-sm-2\"><a href=\"../$htmlfile\">&#x21D1;$title&#x21D1;</a></div>" ;
+	[[ $next ]] &&pager=$pager'<div class="col-sm-4"><a href="'"$next"'.html">Next &#x21D2;</a></div>' ;
+	pager=$pager'<div class=\"col-sm-4\"></div></div>' ;
+	
+	
+	# text description
+	if [[ -e ${filename%.*}.txt ]]; then
+		# not perfect; only passed simple words & standard punctionation
+		blurb="$( tr -s '/' '_'  < ${filename%.*}.txt | tr -cd '[:alnum:][:space:][:punct:]' )"
+		echo -e "BLURB for $filename is \n$blurb"
+    else
+		blurb=""
+	fi
+	
+	
 	cat > "$imagehtmlfile" << EOF
 <!DOCTYPE HTML>
 <html lang="en">
@@ -232,34 +272,14 @@ while [[ $file -lt $numfiles ]]; do
 		</h2></div>
 	</div>
 </div>
-EOF
-
-	# Pager
-	{	echo '<div class="row">' ;
-		if [[ $prev ]]; then 
-			echo '<div class="col-sm-4"><a href="'"$prev"'.html">&#x21D0; Previous</a></div>' ;
-		else
-			echo '<div class="col-sm-4"><a href=""></a></div>' ;
-		fi
-		echo "<div class=\"col-sm-4\"><a href=\"../$htmlfile\">&#x21D1;$title&#x21D1;</a></div>" ;
-		[[ $next ]] && echo '<div class="col-sm-4"><a href="'"$next"'.html">Next &#x21D2;</a></div>' ;
-		echo '</div>' ;
-	} >> "$imagehtmlfile"
-
-	if [[ -e ${filename%.*}.txt ]]; then
-		# not perfect; only passed simple words & standard punctionation
-		blurb="$( tr -s '/' '_'  < ${filename%.*}.txt | tr -cd '[:alnum:][:space:][:punct:]' )"
-		echo -e "BLURB for $filename is \n$blurb"
-    else
-		blurb=""
-	fi
-
-	cat >> "$imagehtmlfile" << EOF
+$pager
 <div class="row">
-	<div class="col-xs-6">
+	<div class="col-xs-8">
 		<p><a href="../$filename"><img src="$height_large/$filename" class="img-responsive" alt=""></a></p>
 	</div>
-	<div class="col-xs-6">
+
+	
+	<div class="col-xs-4">
 		<pre>
 	Name:  $filename
 	Date:  $snapdate
@@ -271,6 +291,7 @@ $blurb
 		</pre>
 	</div>
 </div>
+$pager
 EOF
 
 	# Footer
