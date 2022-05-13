@@ -1,12 +1,67 @@
 gallery.sh
 ==========
+Scripts to generate static web galleries.
 
-[![Build Status](https://travis-ci.org/Cyclenerd/gallery_shell.svg?branch=master)](https://travis-ci.org/Cyclenerd/gallery_shell)
+Derived from:
+  - https://travis-ci.org/Cyclenerd/gallery_shell
+  - https://github.com/wavexx/fgallery
 
-Derived from https://travis-ci.org/Cyclenerd/gallery_shell (Thanks!)
+  Thanks!
+
+Each had some features I wanted and others I do not need.
+My usecase is specifically targeted towards documenting
+"things" built; a visual log on the web without much frontend effort.
 
 
-Bash Script to generate static web galleries.
+Workflow
+---------
+
+Make something and take pictures as you go.
+Place the images you think are relevent in a directory somewhere.
+
+ If you want to include text blurbs for the images:
+ you could just open a text editor (not word processor) and type out a file
+ for each and save with the same base name as the image and a '.txt' extension.
+ Only the simplest subset of printable ascii charaters will be accepted so,
+ no point in getting too fancy.
+
+ If that seems tedious and you can tolerate python, use the helper script.
+
+ From *this* directory enable your python virtual enviroment & run './fcaption.py`'
+ (Apologies if this is your first introduction to: https://xkcd.com/1987/)
+   - perhaps install pipenv or whatever venv you support
+   try  '''pipenv run ./fcaption.py'''
+  Since the QT graphics library automaticly adjusts for your screen resolution ...
+  means I cant read it and have to goose the fontsize
+
+  '''QT_FONT_DPI=168 pipenv run ./fcaption.py'''
+
+
+  Navigate to the directory the images you want to caption are and caption them.
+  has the advantage of keeping the image & test together when working on it
+  and being able to nagivate back and forth between sequential images.
+  (if you are me you will need to run the generated text through a spellchecker)
+
+with (or without) blurbs in place
+
+Usage
+-----
+
+	gallery.sh [-t <title>] [-d <thumbdir>] [-h]:
+		[-t <title>]	 sets the title (default: Gallery)
+		[-d <thumbdir>]	 sets the thumbdir (default: __thumbs)
+		[-h]		 displays help (this message)
+
+Example: `gallery.sh` or `gallery.sh -t "My Photos" -d "thumbs"`
+
+`gallery.sh` works in the **current** directory.
+Just load the index.html in a browser see the output.
+
+The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files.
+It does not run recursively.
+
+
+
 
 Requirements
 ------------
@@ -38,24 +93,6 @@ This combination of features is sufficient for the efficient presentation of my 
 All you need is a place to host your plain html/css and image files.
 
 
-
-Usage
------
-
-	gallery.sh [-t <title>] [-d <thumbdir>] [-h]:
-		[-t <title>]	 sets the title (default: Gallery)
-		[-d <thumbdir>]	 sets the thumbdir (default: __thumbs)
-		[-h]		 displays help (this message)
-
-Example: `gallery.sh` or `gallery.sh -t "My Photos" -d "thumbs"`
-
-`gallery.sh` works in the **current** directory.  
-Just load the index.html in a browser see the output.
-
-The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files. 
-It does not work recursively.
-
-
 Differences
 ----------
 
@@ -67,24 +104,17 @@ This version differs from the original in a number of ways.
   - Clicking on gallery images get you to the full original image.
   	- Save that as you will for downloading
   - Display order is strictly chronological.
-  - Include a `.txt` file with same base-name as the image for a description blurb. 
- 
-  - Things I wish I had remained blissfully unaware of such as 
+  - Include a `.txt` file with same base-name as the image for a description blurb.
+
+  - Things I wish I had remained blissfully unaware of such as
   	- javascript framework versions numbers
-  	- supported glyficon fonts v.s. svg icons  
+  	- supported glyficon fonts v.s. svg icons
 
 
-Demo (of the original version not this fork)
+Demo
 ----
+ maybe later
 
-https://www.nkn-it.de/gallery_shell_demo/
-
-Screenshots
------------
-
-![Gallery](http://i.imgur.com/TOxgphm.jpg)
-
-![Image](http://i.imgur.com/iqQzst2.jpg)
 
 License
 -------
