@@ -10,16 +10,16 @@
 #########################################################################################
 
 # ranked acreen sizes in 2019
-# (1280 * 720  * .289)+ 
-# (1920 * 1080 * .214)+ 
-# (800  * 480  * .103)+ 
-# (854  * 480  * .097)+ 
-# (960  * 540  * .089)+ 
-# (1024 * 600  * .078)+ 
-# (1280 * 800  * .050)+ 
-# (2560 * 1440 * .024)+ 
-# (480  * 320  * .012)+ 
-# (1920 * 1200 * .008)+ 
+# (1280 * 720  * .289)+
+# (1920 * 1080 * .214)+
+# (800  * 480  * .103)+
+# (854  * 480  * .097)+
+# (960  * 540  * .089)+
+# (1024 * 600  * .078)+
+# (1280 * 800  * .050)+
+# (2560 * 1440 * .024)+
+# (480  * 320  * .012)+
+# (1920 * 1200 * .008)+
 # (1024 * 768  * .008)  = 1049708.096  [square root -> 1024.55] (hmmm)
 
 height_small=200
@@ -31,7 +31,7 @@ thumbdir="__thumbs"
 htmlfile="index.html"
 parentpage="../index.html"  # navigation Up from the top level page created
 title="${PWD##*/}"          # name of the current directory as default
-footer='Created with gallery.sh'
+footer='Created with <a href="https://github.com/TomConlin/Gallery">Gallery</a>'
 
 # Use convert from ImageMagick
 convert="/usr/bin/convert"
@@ -50,7 +50,7 @@ stylesheet="css/bootstrap.min.css"
 # true=enable, false=disable
 debug=true
 
-# The cloned git reposity this script is in to copy the css dir from
+# The cloned git repository this script is in to copy the css dir from
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
 #########################################################################################
 #### End Configuration Section
@@ -160,10 +160,10 @@ numfiles=0
 
 # order chronologicaly (by date camera thought it was)
 # ... might want to split this out into its own fx
-# 0x001d GPS Date  
-# 0x0132 Date and Time  
-# 0x9003 Date and Time (Original) 
-# 0x9004 Date and Time (Digitized) 
+# 0x001d GPS Date
+# 0x0132 Date and Time
+# 0x9003 Date and Time (Original)
+# 0x9004 Date and Time (Digitized)
 # ----------------------------------
 # composite-term    derived from
 # --------------    ------------
@@ -172,7 +172,7 @@ numfiles=0
 #					Kodak:MonthDayCreated
 
 #DateTimeCreated 	IPTC:DateCreated
-#					IPTC:TimeCreated 	 
+#					IPTC:TimeCreated
 
 #DateTimeOriginal 	DateTimeCreated
 #					DateCreated
@@ -181,13 +181,13 @@ numfiles=0
 #DateTimeOriginal 	ID3:RecordingTime
 # 					ID3:Year
 #					ID3:Date
-#					ID3:Time 	 
- 
+#					ID3:Time
+
 # DigitalCreationDateTime 	IPTC:DigitalCreationDate
 #							IPTC:DigitalCreationTime
 # ----------------------------------
 # GPSDateTime 	GPS:GPSDateStamp
-#   			GPS:GPSTimeStamp 	 
+#   			GPS:GPSTimeStamp
 # GPSDateTime	Parrot:GPSLatitude
 # 				SampleTime
 
@@ -234,7 +234,7 @@ while [[ $file -lt $numfiles ]]; do
 
 	# navigation
 	pager='<div class="row">'
-	if [[ $prev ]]; then 
+	if [[ $prev ]]; then
 		pager=$pager'<div class="col-sm-2"><a href="'"$prev"'.html">&#x21D0; Previous</a></div>' ;
 	else
 		pager=$pager'<div class="col-sm-4"><a href=""></a></div>' ;
@@ -242,18 +242,18 @@ while [[ $file -lt $numfiles ]]; do
 	pager=$pager"<div class=\"col-sm-2\"><a href=\"../$htmlfile\">&#x21D1;$title&#x21D1;</a></div>" ;
 	[[ $next ]] &&pager=$pager'<div class="col-sm-4"><a href="'"$next"'.html">Next &#x21D2;</a></div>' ;
 	pager=$pager'<div class=\"col-sm-4\"></div></div>' ;
-	
-	
+
+
 	# text description
 	if [[ -e ${filename%.*}.txt ]]; then
-		# not perfect; only passed simple words & standard punctionation
+		# not perfect; only passed simple words & standard punctuation
 		blurb="$( tr -s '/' '_'  < ${filename%.*}.txt | tr -cd '[:alnum:][:space:][:punct:]' )"
 		echo -e "BLURB for $filename is \n$blurb"
     else
 		blurb=""
 	fi
-	
-	
+
+
 	cat > "$imagehtmlfile" << EOF
 <!DOCTYPE HTML>
 <html lang="en">
@@ -278,7 +278,7 @@ $pager
 		<p><a href="../$filename"><img src="$height_large/$filename" class="img-responsive" alt=""></a></p>
 	</div>
 
-	
+
 	<div class="col-xs-4">
 		<pre>
 	Name:  $filename
@@ -318,4 +318,3 @@ cat >> "$htmlfile" << EOF
 EOF
 
 debugOutput "= done :-)"
-
