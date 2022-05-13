@@ -4,8 +4,8 @@
 # Copyright(c) 2015-2016 by wave++ "Yuri D'Elia" <wavexx@thregr.org>
 #
 # Forked 2021. because original fgallery GH repo is "Archived"
-#  - addapt to PyQt5
-#  - avoid recursing directories
+#  - move to PyQt5
+#  - avoid recusing directories
 #  - avoid relying on file extensions to identify images
 #  - presentation order to follow exif timestamps
 
@@ -254,7 +254,7 @@ def expand_dir(path):
 
     # for root, dirs, files in os.walk(path):
     for tmp in os.scandir(path):
-        # filter for image files despite extention
+        # filter for image files despite extension
         if tmp.is_file() and magic.from_file(tmp.path, mime=True)[:5] == 'image':
             #print(tmp.name)
             yield tmp.path
@@ -287,7 +287,7 @@ class Application(QApplication):
                 files.extend(expand_dir(path))
 
         # files.sort()  # lexical sort by filename
-        files = exif_sort(files)  # chronologicaly by creation date
+        files = exif_sort(files)  # chronologically by creation date
 
         if not files:
             print("no files to caption", file=sys.stderr)
