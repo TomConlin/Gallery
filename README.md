@@ -9,37 +9,37 @@ Derived from:
   Thanks!
 
 Each had some features I wanted and others I do not need.
-My usecase is specifically targeted towards documenting
-"things" built; a visual log on the web without much frontend effort.
+My use case is specifically targeted towards documenting
+"things" built; a visual log on the web without much front end effort.
 
 
 Workflow
 ---------
 
 Make something and take pictures as you go.
-Place the images you think are relevent in a directory somewhere.
+Place the images you think are relevant in a directory somewhere.
 
  If you want to include text blurbs for the images:
  you could just open a text editor (not word processor) and type out a file
  for each and save with the same base name as the image and a '.txt' extension.
- Only the simplest subset of printable ascii charaters will be accepted so,
+ Only the simplest subset of printable ascii characters will be accepted so,
  no point in getting too fancy.
 
  If that seems tedious and you can tolerate python, use the helper script.
 
- From *this* directory enable your python virtual enviroment & run './fcaption.py`'
+ From *this* directory enable your python virtual environment & run './fcaption.py`'
  (Apologies if this is your first introduction to: https://xkcd.com/1987/)
    - perhaps install pipenv or whatever venv you support
-   try  '''pipenv run ./fcaption.py'''
-  Since the QT graphics library automaticly adjusts for your screen resolution ...
-  means I cant read it and have to goose the fontsize
+   cross your parts and try:
 
-  '''QT_FONT_DPI=168 pipenv run ./fcaption.py'''
+   '''pipenv run caption'''
 
+  Since the QT graphics library automatically adjusts for your screen resolution ...
+  I include a '''.env''' file here that lets us overide their choice of font size.
 
   Navigate to the directory the images you want to caption are and caption them.
   has the advantage of keeping the image & test together when working on it
-  and being able to nagivate back and forth between sequential images.
+  and being able to navigate back and forth between sequential images.
   (if you are me you will need to run the generated text through a spellchecker)
 
 with (or without) blurbs in place
