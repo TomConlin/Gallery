@@ -27,15 +27,17 @@ Workflow
 
  If that seems tedious and you can tolerate python, use the helper script.
 
- From *this* directory enable your python virtual environment & run './fcaption.py`'
- (Apologies if this is your first introduction to: https://xkcd.com/1987/)
+ From *this* directory enable your python virtual environment & run `./fcaption.py``
+
+ Apologies if this is your first introduction to [python](https://xkcd.com/1987/)
+
    - perhaps install pipenv or whatever flavor you get support for
    cross your parts, and try:
 
    `pipenv run caption`
 
   aside: Since the QT graphics library automatically adjusts for your screen resolution ...
-  I include a '''.env''' file here that lets us over ride their choice of font size.
+  I include a `.env`  file here that lets us over ride their choice of font size.
 
   Navigate to the directory the images you want to caption are and caption them.
   has the advantage of keeping the image & test together when working on it
