@@ -16,8 +16,8 @@ My use case is specifically targeted towards documenting
 Workflow
 ---------
 
-Make something and take pictures as you go.
-Place the images you think are relevant in a directory somewhere.
+ - Make something and take pictures as you go.
+ - Place the images you think are relevant in a directory somewhere.
 
  If you want to include text blurbs for the images:
  you could just open a text editor (not word processor) and type out a file
@@ -29,36 +29,38 @@ Place the images you think are relevant in a directory somewhere.
 
  From *this* directory enable your python virtual environment & run './fcaption.py`'
  (Apologies if this is your first introduction to: https://xkcd.com/1987/)
-   - perhaps install pipenv or whatever venv you support
-   cross your parts and try:
+   - perhaps install pipenv or whatever flavor you get support for
+   cross your parts, and try:
 
-   '''pipenv run caption'''
+   `pipenv run caption`
 
-  Since the QT graphics library automatically adjusts for your screen resolution ...
-  I include a '''.env''' file here that lets us overide their choice of font size.
+  aside: Since the QT graphics library automatically adjusts for your screen resolution ...
+  I include a '''.env''' file here that lets us over ride their choice of font size.
 
   Navigate to the directory the images you want to caption are and caption them.
   has the advantage of keeping the image & test together when working on it
   and being able to navigate back and forth between sequential images.
   (if you are me you will need to run the generated text through a spellchecker)
 
-with (or without) blurbs in place
+With (or without) blurbs in place.
+Over in the directory the images are in (not launched from this one).
+run the `gallery.sh`  script
 
 Usage
 -----
 
 	gallery.sh [-t <title>] [-d <thumbdir>] [-h]:
 		[-t <title>]	 sets the title (default: Gallery)
-		[-d <thumbdir>]	 sets the thumbdir (default: __thumbs)
+		[-d <thumbdir>]	 sets the thumbnail directory (default: __thumbs)
 		[-h]		 displays help (this message)
 
-Example: `gallery.sh` or `gallery.sh -t "My Photos" -d "thumbs"`
-
+Example: `gallery.sh`  or `gallery.sh -t "My Photos" -d "thumbs"`
 `gallery.sh` works in the **current** directory.
-Just load the index.html in a browser see the output.
+
+Just load the resulring index.html in a browser see the output.
 
 The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files.
-It does not run recursively.
+It does __not__ run recursively.
 
 
 
@@ -88,7 +90,8 @@ It offers several features:
 * Chronological display order
 * Optional inclusion of a text blurb
 
-This combination of features is sufficient for the efficient presentation of my various projects.
+This combination of features is sufficient for the efficient presentation of
+my various projects.
 
 All you need is a place to host your plain html/css and image files.
 
@@ -113,10 +116,12 @@ This version differs from the original in a number of ways.
 
 Demo
 ----
- maybe later
+[Laser cut Sudiball(]https://ix.cs.uoregon.edu/~tomc/Hobbies/Astronomy/ATM/SudiBall/RoguesGallery/OSP_2019)
 
 
 License
 -------
 GNU Public License version 3.
-Please feel free to fork and modify this on GitHub (https://github.com/Cyclenerd/gallery_shell).
+Please feel free to fork and modify this on GitHub
+ - Original:   https://github.com/Cyclenerd/gallery_shell
+ - This Fork:  https://github.com/TomConlin/Gallery
