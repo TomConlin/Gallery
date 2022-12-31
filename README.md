@@ -3,7 +3,7 @@ gallery.sh
 Scripts to generate static web galleries.
 
 Derived from:
-  - https://travis-ci.org/Cyclenerd/gallery_shell
+  - https://github.com/Cyclenerd/gallery_shell
   - https://github.com/wavexx/fgallery
 
   Thanks!
