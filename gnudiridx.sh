@@ -1,4 +1,6 @@
 #!/bin/bash
+# gnudiridx.sh
+
 # Mangled: 2020-Jun by tomc
 # Updated: Wed Apr 10 21:04:12 2013 by webmaster@askapache
 # @ http://u.askapache.com/2013/04/gnu-mirror-index-creator.txt
