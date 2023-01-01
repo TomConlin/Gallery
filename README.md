@@ -59,7 +59,7 @@ Usage
 Example: `gallery.sh`  or `gallery.sh -t "My Photos" -d "thumbs"`
 `gallery.sh` works in the **current** directory.
 
-Just load the resulring index.html in a browser see the output.
+Just load the resulting index.html in a browser see the output.
 
 The directory should contain a bunch of JPEG (.jpeg or .jpg  of any case) files.
 It does __not__ run recursively.
