@@ -3,7 +3,7 @@ gallery.sh
 Scripts to generate static web galleries.
 
 Derived from:
-  - https://travis-ci.org/Cyclenerd/gallery_shell
+  - https://github.com/Cyclenerd/gallery_shell
   - https://github.com/wavexx/fgallery
 
   Thanks!
@@ -40,7 +40,7 @@ Workflow
   I include a `.env`  file here that lets us over ride their choice of font size.
 
   Navigate to the directory the images you want to caption are and caption them.
-  has the advantage of keeping the image & test together when working on it
+  has the advantage of keeping the image & text together when working on it
   and being able to navigate back and forth between sequential images.
   (if you are me you will need to run the generated text through a spellchecker)
 
