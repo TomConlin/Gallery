@@ -118,7 +118,7 @@ This version differs from the original in a number of ways.
 
 Demo
 ----
-[Laser cut Sudiball(]https://ix.cs.uoregon.edu/~tomc/Hobbies/Astronomy/ATM/SudiBall/RoguesGallery/OSP_2019)
+[Laser cut Sudiball](https://ix.cs.uoregon.edu/~tomc/Hobbies/Astronomy/ATM/SudiBall/RoguesGallery/OSP_2019)
 
 
 License
